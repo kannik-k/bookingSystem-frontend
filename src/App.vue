@@ -7,15 +7,11 @@ import {ref} from 'vue';
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    <img alt="Plane logo" class="logo" src="./assets/plane.png" width="125" height="125" />
 
     <div class="wrapper">
-      <HelloWorld msg="Plane a Plain!" />
+      <HelloWorld msg="Plan a plane!" />
     </div>
-
-    <nav>
-      <RouterLink to="/">FlightView</RouterLink>
-    </nav>
   </header>
 
   <RouterView />
