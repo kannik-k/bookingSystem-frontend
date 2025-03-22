@@ -95,6 +95,20 @@ function redirectToSeats() {
     <!-- Error message -->
     <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
+    <div class="search-form">
+
+      <label for="departureAirport">Departure Airport</label>
+      <input type="text" v-model="lastSearchQuery.departureAirport" id="departureAirport" placeholder="Enter departure airport"/>
+
+      <label for="arrivalAirport">Arrival Airport</label>
+      <input type="text" v-model="lastSearchQuery.arrivalAirport" id="arrivalAirport" placeholder="Enter arrival airport"/>
+
+      <label for="departureTime">Departure Time</label>
+      <input type="text" v-model="lastSearchQuery.departureTime" id="departureTime" placeholder="Enter departure time"/>
+
+      <button @click="getFlights">Search</button>
+    </div>
+
     <!-- Flights list -->
     <div v-if="flights.length > 0">
       <table class="flight-table" aria-label="Flights">
@@ -140,7 +154,7 @@ function redirectToSeats() {
   </div>
 </template>
 
-<style scoped>
+<style>
 
 .pagination {
   display: flex;
