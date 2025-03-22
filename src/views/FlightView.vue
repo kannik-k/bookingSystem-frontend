@@ -2,10 +2,16 @@
 import { onMounted, ref, watch } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
 // Constants
 const flights = ref([]);
 const errorMessage = ref(null); // error handling
+
+// calender
+const selectedDate = ref(null); // Date object
+const formattedDate = ref(null); // LocalDateTime string
 
 // Pagination
 const currentPage = ref(0);
@@ -43,14 +49,26 @@ const getFlights = async () => {
 
     flights.value = response.data.flights && response.data.flights.length > 0
       ? response.data.flights : [];
-    console.log(flights.value)
-    console.log('Lennud massiiv:', flights.value);
     hasNextPage.value = response.data.hasNextPage || false;
 
   } catch (error) {
     errorMessage.value = error.response?.data.message || 'An error occurred while fetching the flights';
   }
 };
+
+watch(selectedDate, (newDate) => {
+  if (newDate) {
+    const year = newDate.getFullYear();
+    const month = String(newDate.getMonth() + 1).padStart(2, '0');
+    const day = String(newDate.getDate()).padStart(2, '0');
+    formattedDate.value = `${year}-${month}-${day}T00:00:00`;
+    lastSearchQuery.value.departureTime = formattedDate.value;
+    console.log('LocalDateTime:', formattedDate.value);
+  } else {
+    formattedDate.value = null;
+    lastSearchQuery.value.departureTime = null;
+  }
+});
 
 watch([pageSize, currentPage], () => {
   //currentPage.value = 0;
@@ -103,7 +121,8 @@ function redirectToSeats() {
       <input type="text" v-model="lastSearchQuery.arrivalAirport" id="arrivalAirport" placeholder="Enter arrival airport"/>
 
       <label for="departureTime">Departure Time</label>
-      <input type="text" v-model="lastSearchQuery.departureTime" id="departureTime" placeholder="Enter departure time"/>
+      <Datepicker v-model="lastSearchQuery.departureTime" :is-24="true" :enable-time-picker="false" :format="'dd/MM/yyyy'" placeholder="Select date"/>
+      <p v-if="formattedDate">LocalDateTime: {{ formattedDate }}</p>
 
       <button @click="getFlights" class="search-button">Search</button>
     </div>
@@ -179,6 +198,19 @@ function redirectToSeats() {
 
 .search-button:hover {
   background-color: #45a049;
+}
+
+.search-bar .vue-datepicker-wrapper {
+  width: 250px;
+  padding: 10px;
+}
+
+.search-bar input[type="text"] {
+  width: 260px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .pagination {
