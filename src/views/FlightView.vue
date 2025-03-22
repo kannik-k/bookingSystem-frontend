@@ -15,7 +15,7 @@ const hasNextPage = ref(false);
 // Search query state
 const lastSearchQuery = ref({
   flightId: null,
-  flightNum: null,
+  flightNumber: null,
   departureAirport: null,
   arrivalAirport: null,
   departureTime: null,
@@ -28,7 +28,7 @@ const getFlights = async () => {
   try {
     const params = {
       flightId: lastSearchQuery.value.flightId,
-      flightNum: lastSearchQuery.value.flightNum,
+      flightNumber: lastSearchQuery.value.flightNumber,
       departureAirport: lastSearchQuery.value.departureAirport,
       arrivalAirport: lastSearchQuery.value.arrivalAirport,
       departureTime: lastSearchQuery.value.departureTime,
@@ -44,6 +44,7 @@ const getFlights = async () => {
     flights.value = response.data.flights && response.data.flights.length > 0
       ? response.data.flights : [];
     console.log(flights.value)
+    console.log('Lennud massiiv:', flights.value);
     hasNextPage.value = response.data.hasNextPage || false;
 
   } catch (error) {
@@ -114,7 +115,7 @@ function redirectToSeats() {
             @click="redirectToSeats"
             style="cursor: pointer;"
         >
-          <td>{{ flight.flightNum }}</td>
+          <td>{{ flight.flightNumber }}</td>
           <td>{{ flight.departureAirport }}</td>
           <td>{{ flight.arrivalAirport }}</td>
           <td>{{ formatDate(flight.departureTime) }}</td>
