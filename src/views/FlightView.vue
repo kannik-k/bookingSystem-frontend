@@ -95,8 +95,7 @@ function redirectToSeats() {
     <!-- Error message -->
     <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-    <div class="search-form">
-
+    <div class="search-bar">
       <label for="departureAirport">Departure Airport</label>
       <input type="text" v-model="lastSearchQuery.departureAirport" id="departureAirport" placeholder="Enter departure airport"/>
 
@@ -106,7 +105,7 @@ function redirectToSeats() {
       <label for="departureTime">Departure Time</label>
       <input type="text" v-model="lastSearchQuery.departureTime" id="departureTime" placeholder="Enter departure time"/>
 
-      <button @click="getFlights">Search</button>
+      <button @click="getFlights" class="search-button">Search</button>
     </div>
 
     <!-- Flights list -->
@@ -155,6 +154,32 @@ function redirectToSeats() {
 </template>
 
 <style>
+
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-button {
+  background-color: #97DC21;
+  color: white;
+  font-size: 16px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #45a049;
+}
 
 .pagination {
   display: flex;
