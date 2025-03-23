@@ -1,20 +1,18 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 
 const flightData = ref({});
 const errorMessage = ref('');
 const seats = ref([]);
-const selectedFilters = ref({
-  isWindowSeat: false,
-  extraLegroom: false,
-  nearExit: false,
-  seatClass: 'economy',
-});
 
-const selectedSeatCount = ref(1);
-const areSeatsTogether = ref(false);
+const seatClass = ref('economy');
+const extraLegroom = ref(false);
+const nearExit = ref(false);
+const isWindowSeat = ref(false);
+const seatNum = ref(1);
+const seatsTogether = ref(false);
 
 const route = useRoute();
 const flightId = route.params.flightId;
@@ -55,6 +53,31 @@ const fetchFlightData = async () => {
   }
 };
 
+const fetchSeatsByFlightId = async () => {
+  try {
+    if (!flightId) {
+      throw new Error('Flight ID is missing');
+    }
+    console.log("fetch seats by flight")
+
+    const filterParams = {
+      classType: seatClass.value,
+      isNearExit: nearExit.value,
+      hasExtraLegroom: extraLegroom.value,
+      seatNum: seatNum.value,
+      windowSeat: isWindowSeat.value,
+      seatsTogether: seatsTogether.value,
+    };
+    console.log(filterParams)
+
+    const seatResponse = await axios.get(`/api/seats/select/${flightId}`, { params: filterParams });
+    seats.value = seatResponse.data;
+    console.log('Filtered Seats:', seats.value);
+  } catch (error) {
+    errorMessage.value = error.response?.data?.message || 'Error fetching seat data';
+  }
+};
+
 const isSeatReserved = (seatId) => {
   const seat = seats.value.find(s => s.seatNumber === seatId);
   return seat?.isReserved || false;
@@ -74,18 +97,18 @@ onMounted(() => {
       <label>
         Seats:
         <select v-model="seatNum">
-          <option v-for="n in 10" :key="n" :value="n">{{ n }}</option>
+          <option v-for="n in 6" :key="n" :value="n">{{ n }}</option>
         </select>
       </label>
 
       <label>
-        <input type="checkbox" v-model="areSeatsTogether" />
+        <input type="checkbox" v-model="seatsTogether" />
         Seats together
       </label>
 
       <label>
         Class:
-        <select v-model="selectedFilters.seatClass">
+        <select v-model="seatClass">
           <option value="economy class">Economy</option>
           <option value="business class">Business</option>
           <option value="first class">First Class</option>
@@ -93,21 +116,21 @@ onMounted(() => {
       </label>
 
       <label>
-        <input type="checkbox" v-model="selectedFilters.isWindowSeat" />
+        <input type="checkbox" v-model="isWindowSeat" />
         Window seat
       </label>
 
       <label>
-        <input type="checkbox" v-model="selectedFilters.isNearExit" />
+        <input type="checkbox" v-model="nearExit" />
         Near exit
       </label>
 
       <label>
-        <input type="checkbox" v-model="selectedFilters.hasExtraLegroom" />
+        <input type="checkbox" v-model="extraLegroom" />
         Extra legroom
       </label>
 
-      <button class="search-button" @click="fetchFlightData">Search</button>
+      <button class="search-button" @click="fetchSeatsByFlightId">Search</button>
     </div>
 
     <div class="main-section">
@@ -126,7 +149,7 @@ onMounted(() => {
       <div class="seat-map">
         <h2>Seat Map</h2>
         <div v-for="row in rows" :key="row" class="row">
-          <div v-for="seat in seatLetters" :key="seat + row"
+          <div v-for="seat in seatLetters" :key="row + seat"
                :class="[
                   'seat',
                   seat === 'gap' ? 'gap' : isSeatReserved(row + seat) ? 'reserved' : 'seat-box'
@@ -139,6 +162,7 @@ onMounted(() => {
 
   </div>
 </template>
+
 
 <style>
 
