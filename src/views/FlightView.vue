@@ -198,8 +198,8 @@ const redirectToSeats = (flightId) => {
 .content-wrapper {
   display: flex;
   flex-direction: column;
-  margin-left: 20vh;
-  margin-top: 20vh
+  margin-left: 10vh;
+  margin-top: 20vh;
 }
 
 .search-bar {
@@ -278,9 +278,8 @@ const redirectToSeats = (flightId) => {
 }
 
 .flight-table {
-  width: 100%;
   border-collapse: collapse;
-  margin: 2rem 0;
+  width: 100vh;
 }
 
 .flight-table th, .flight-table td {
