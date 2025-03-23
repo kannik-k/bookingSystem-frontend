@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 
@@ -94,6 +94,21 @@ const isSeatSelected = (seatId) => {
   return selectedSeats.value.some(s => s.seatNumber === seatId);
 };
 
+const totalPrice = computed(() => {
+  let price = flightData.value.price || 0;
+  let total = 0;
+
+  if (seatClass.value === 'business') {
+    total = (price * 1.2) * selectedSeats.value.length;
+  } else if (seatClass.value === 'first') {
+    total = (price * 1.5) * selectedSeats.value.length;
+  } else {
+    total = price * selectedSeats.value.length;
+  }
+  console.log(total)
+  return total.toFixed(2);
+});
+
 watch([seatClass, extraLegroom, nearExit, isWindowSeat, seatNum, seatsTogether], () => {
   console.log("Filters changed, re-fetching seats...");
   getSeatsByFlightId();
@@ -126,7 +141,7 @@ onMounted(() => {
       <label>
         Class:
         <select v-model="seatClass">
-          <option value="economy class">Economy</option>
+          <option value="economy">Economy</option>
           <option value="business">Business</option>
           <option value="first">First Class</option>
         </select>
@@ -161,6 +176,15 @@ onMounted(() => {
         <p><strong>Departure Time:</strong> {{ formatTime(flightData.departureTime) }}</p>
         <p><strong>Arrival Time:</strong> {{ formatTime(flightData.arrivalTime) }}</p>
         <p><strong>Economy Class Ticket Price:</strong> €{{ flightData.price ? flightData.price.toFixed(2) : 'N/A' }}</p>
+
+
+        <h3>Selected Seats:</h3>
+        <p v-if="selectedSeats.length > 0">
+          {{ selectedSeats.map(seat => seat.seatNumber).join(', ') }}
+        </p>
+        <p v-else>No seats matching your wishes</p>
+
+        <h4>Total Price: {{ totalPrice }}</h4>
       </div>
 
       <div class="seat-map">
@@ -193,6 +217,16 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   width: 100%;
+}
+
+.flight-info h3 {
+  padding-top: 5vh;
+  font-size: 18px;
+  color: #97DC21;
+}
+
+.flight-info h4 {
+  font-size: 18px;
 }
 
 .search-bar {
