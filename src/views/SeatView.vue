@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 
@@ -12,7 +12,7 @@ const seatClass = ref('economy');
 const extraLegroom = ref(false);
 const nearExit = ref(false);
 const isWindowSeat = ref(false);
-const seatNum = ref(1);
+const seatNum = ref();
 const seatsTogether = ref(false);
 
 const route = useRoute();
@@ -44,22 +44,26 @@ const fetchFlightData = async () => {
       throw new Error('Flight ID is missing');
     }
 
+    console.log("Fetching flight data...");
     const response = await axios.get(`/api/flights/${flightId}`);
     flightData.value = response.data;
 
+    console.log("Fetching seats data...");
     const seatResponse = await axios.get(`/api/seats/${flightId}`);
     seats.value = seatResponse.data;
   } catch (error) {
     errorMessage.value = error.response?.data?.message || 'Error fetching flight data';
+    console.error(error);
   }
 };
 
-const fetchSeatsByFlightId = async () => {
+const getSeatsByFlightId = async () => {
   try {
     if (!flightId) {
       throw new Error('Flight ID is missing');
     }
 
+    console.log("Fetching seats with filters...");
     const filterParams = {
       classType: seatClass.value,
       isNearExit: nearExit.value,
@@ -69,10 +73,15 @@ const fetchSeatsByFlightId = async () => {
       seatsTogether: seatsTogether.value,
     };
 
+    console.log("Filter Params:", filterParams);
+
     const seatResponse = await axios.get(`/api/seats/select/${flightId}`, { params: filterParams });
     selectedSeats.value = seatResponse.data;
+
+    console.log("Fetched seats:", selectedSeats.value);
   } catch (error) {
     errorMessage.value = error.response?.data?.message || 'Error fetching seat data';
+    console.error(error);
   }
 };
 
@@ -85,10 +94,17 @@ const isSeatSelected = (seatId) => {
   return selectedSeats.value.some(s => s.seatNumber === seatId);
 };
 
+watch([seatClass, extraLegroom, nearExit, isWindowSeat, seatNum, seatsTogether], () => {
+  console.log("Filters changed, re-fetching seats...");
+  getSeatsByFlightId();
+});
+
 onMounted(() => {
+  console.log("Component mounted, fetching flight data...");
   fetchFlightData();
 });
 </script>
+
 
 <template>
   <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
@@ -111,8 +127,8 @@ onMounted(() => {
         Class:
         <select v-model="seatClass">
           <option value="economy class">Economy</option>
-          <option value="business class">Business</option>
-          <option value="first class">First Class</option>
+          <option value="business">Business</option>
+          <option value="first">First Class</option>
         </select>
       </label>
 
@@ -131,7 +147,7 @@ onMounted(() => {
         Extra legroom
       </label>
 
-      <button class="search-button" @click="fetchSeatsByFlightId">Search</button>
+      <button class="search-button" @click="getSeatsByFlightId">Search</button>
     </div>
 
     <div class="main-section">
