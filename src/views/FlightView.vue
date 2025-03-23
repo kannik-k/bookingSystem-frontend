@@ -4,7 +4,6 @@ import axios from "axios";
 import { useRouter } from "vue-router";
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import planeLogo from '@/assets/plane.png'
 
 // Constants
 const flights = ref([]);
@@ -211,7 +210,7 @@ const redirectToSeats = (flightId) => {
   padding: 10px;
   background-color: #f5f5f5;
   border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .search-button {
