@@ -103,9 +103,10 @@ function formatDate(dateString) {
 }
 
 const router = useRouter();
-function redirectToSeats() {
-  router.push('/seats');  // Redirect to /seats (seat booking page)
-}
+
+const redirectToSeats = (flightId) => {
+  router.push({ name: 'seats', params: { flightId } });
+};
 </script>
 
 <template>
@@ -144,7 +145,7 @@ function redirectToSeats() {
         <tr
             v-for="(flight, index) in flights"
             :key="index"
-            @click="redirectToSeats"
+            @click="redirectToSeats(flight.flightId)"
             style="cursor: pointer;"
         >
           <td>{{ flight.flightNumber }}</td>
