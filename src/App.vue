@@ -6,13 +6,13 @@ import {ref} from 'vue';
 </script>
 
 <template>
-  <header>
+  <!--<header>
     <img alt="Plane logo" class="logo" src="./assets/plane.png" width="125" height="125" />
 
     <div class="wrapper">
       <HelloWorld msg="Plan a plane!" />
     </div>
-  </header>
+  </header>-->
 
   <RouterView />
 </template>

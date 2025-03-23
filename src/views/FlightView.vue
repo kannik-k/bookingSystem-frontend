@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "vue-router";
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import planeLogo from '@/assets/plane.png'
 
 // Constants
 const flights = ref([]);
@@ -117,75 +118,91 @@ const redirectToSeats = (flightId) => {
 
 <template>
   <div class="page-layout">
-    <!-- Error message -->
-    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+    <div class="content-wrapper">
 
-    <div class="search-bar">
-      <label for="departureAirport">Departure Airport</label>
-      <input type="text" v-model="lastSearchQuery.departureAirport" id="departureAirport" placeholder="Enter departure airport"/>
-
-      <label for="arrivalAirport">Arrival Airport</label>
-      <input type="text" v-model="lastSearchQuery.arrivalAirport" id="arrivalAirport" placeholder="Enter arrival airport"/>
-
-      <label for="departureTime">Departure Time</label>
-      <Datepicker v-model="lastSearchQuery.departureTime" :is-24="true" :enable-time-picker="false" :format="'dd/MM/yyyy'" placeholder="Select date"/>
-      <p v-if="formattedDate">LocalDateTime: {{ formattedDate }}</p>
-
-      <button @click="getFlights" class="search-button">Search</button>
-    </div>
-
-    <!-- Flights list -->
-    <div v-if="flights.length > 0">
-      <table class="flight-table" aria-label="Flights">
-        <thead>
-        <tr>
-          <th>Flight Number</th>
-          <th>Departure Airport</th>
-          <th>Arrival Airport</th>
-          <th>Departure Time</th>
-          <th>Arrival Time</th>
-          <th>Price</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr
-            v-for="(flight, index) in flights"
-            :key="index"
-            @click="redirectToSeats(flight.flightId)"
-            style="cursor: pointer;"
-        >
-          <td>{{ flight.flightNumber }}</td>
-          <td>{{ flight.departureAirport }}</td>
-          <td>{{ flight.arrivalAirport }}</td>
-          <td>
-            <div>{{ formatDate(flight.departureTime).formattedDate }}</div>
-            <div>{{ formatDate(flight.departureTime).formattedTime }}</div>
-          </td>
-          <td>
-            <div>{{ formatDate(flight.arrivalTime).formattedDate }}</div>
-            <div>{{ formatDate(flight.arrivalTime).formattedTime }}</div>
-          </td>
-          <td>${{ flight.price }}</td>
-        </tr>
-        </tbody>
-      </table>
-
-      <!-- Pagination -->
-      <div class="pagination">
-        <button :disabled="currentPage === 0" @click="goToPreviousPage">Previous</button>
-        <span class="page-number">Page {{ currentPage + 1 }}</span>
-        <button :disabled="!hasNextPage" @click="goToNextPage">Next</button>
+      <div class="hero-section">
+        <img alt="Plane logo" class="logo" src="@/assets/plane.png" width="125" height="125" />
+        <h1 class="hero-text">Plan a plane!</h1>
       </div>
-    </div>
 
-    <!-- If no flights found -->
-    <div v-else>
-      <p>No flights found.</p>
+      <!-- Error message -->
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+      <div class="search-bar">
+        <label for="departureAirport">Departure Airport</label>
+        <input type="text" v-model="lastSearchQuery.departureAirport" id="departureAirport" placeholder="Enter departure airport"/>
+
+        <label for="arrivalAirport">Arrival Airport</label>
+        <input type="text" v-model="lastSearchQuery.arrivalAirport" id="arrivalAirport" placeholder="Enter arrival airport"/>
+
+        <label for="departureTime">Departure Time</label>
+        <Datepicker v-model="lastSearchQuery.departureTime" :is-24="true" :enable-time-picker="false" :format="'dd/MM/yyyy'" placeholder="Select date"/>
+        <p v-if="formattedDate">LocalDateTime: {{ formattedDate }}</p>
+
+        <button @click="getFlights" class="search-button">Search</button>
+      </div>
+
+      <!-- Flights list -->
+      <div v-if="flights.length > 0">
+        <table class="flight-table" aria-label="Flights">
+          <thead>
+          <tr>
+            <th>Flight Number</th>
+            <th>Departure Airport</th>
+            <th>Arrival Airport</th>
+            <th>Departure Time</th>
+            <th>Arrival Time</th>
+            <th>Price</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+              v-for="(flight, index) in flights"
+              :key="index"
+              @click="redirectToSeats(flight.flightId)"
+              style="cursor: pointer;"
+          >
+            <td>{{ flight.flightNumber }}</td>
+            <td>{{ flight.departureAirport }}</td>
+            <td>{{ flight.arrivalAirport }}</td>
+            <td>
+              <div>{{ formatDate(flight.departureTime).formattedDate }}</div>
+              <div>{{ formatDate(flight.departureTime).formattedTime }}</div>
+            </td>
+            <td>
+              <div>{{ formatDate(flight.arrivalTime).formattedDate }}</div>
+              <div>{{ formatDate(flight.arrivalTime).formattedTime }}</div>
+            </td>
+            <td>${{ flight.price }}</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <button :disabled="currentPage === 0" @click="goToPreviousPage">Previous</button>
+          <span class="page-number">Page {{ currentPage + 1 }}</span>
+          <button :disabled="!hasNextPage" @click="goToNextPage">Next</button>
+        </div>
+      </div>
+
+      <!-- If no flights found -->
+      <div v-else>
+        <p>No flights found.</p>
+      </div>
     </div>
   </div>
 </template>
 
 <style>
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20vh;
+  margin-top: 20vh
+}
+
 .search-bar {
   display: flex;
   justify-content: space-between;
@@ -279,5 +296,29 @@ const redirectToSeats = (flightId) => {
 
 .flight-table th {
   background-color: var(--table-color);
+}
+
+.hero-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-direction: column;
+}
+
+.logo {
+  display: block;
+}
+
+.hero-text {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 </style>
