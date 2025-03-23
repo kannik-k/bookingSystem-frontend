@@ -48,7 +48,7 @@ const getFlights = async () => {
     console.log(response);
 
     flights.value = response.data.flights && response.data.flights.length > 0
-      ? response.data.flights : [];
+        ? response.data.flights : [];
     hasNextPage.value = response.data.hasNextPage || false;
 
   } catch (error) {
@@ -71,7 +71,6 @@ watch(selectedDate, (newDate) => {
 });
 
 watch([pageSize, currentPage], () => {
-  //currentPage.value = 0;
   getFlights();
 });
 
@@ -99,7 +98,14 @@ function formatDate(dateString) {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-  return `${day}.${month}.${year}`;
+
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  const formattedDate = `${day}.${month}.${year}`;
+  const formattedTime = `${hours}:${minutes}`;
+
+  return { formattedDate, formattedTime };
 }
 
 const router = useRouter();
@@ -151,8 +157,14 @@ const redirectToSeats = (flightId) => {
           <td>{{ flight.flightNumber }}</td>
           <td>{{ flight.departureAirport }}</td>
           <td>{{ flight.arrivalAirport }}</td>
-          <td>{{ formatDate(flight.departureTime) }}</td>
-          <td>{{ formatDate(flight.arrivalTime) }}</td>
+          <td>
+            <div>{{ formatDate(flight.departureTime).formattedDate }}</div>
+            <div>{{ formatDate(flight.departureTime).formattedTime }}</div>
+          </td>
+          <td>
+            <div>{{ formatDate(flight.arrivalTime).formattedDate }}</div>
+            <div>{{ formatDate(flight.arrivalTime).formattedTime }}</div>
+          </td>
           <td>${{ flight.price }}</td>
         </tr>
         </tbody>
@@ -174,7 +186,6 @@ const redirectToSeats = (flightId) => {
 </template>
 
 <style>
-
 .search-bar {
   display: flex;
   justify-content: space-between;
