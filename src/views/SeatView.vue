@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router';
 const flightData = ref({});
 const errorMessage = ref('');
 const seats = ref([]);
+const selectedSeats = ref([]);
 
 const seatClass = ref('economy');
 const extraLegroom = ref(false);
@@ -58,7 +59,6 @@ const fetchSeatsByFlightId = async () => {
     if (!flightId) {
       throw new Error('Flight ID is missing');
     }
-    console.log("fetch seats by flight")
 
     const filterParams = {
       classType: seatClass.value,
@@ -68,11 +68,9 @@ const fetchSeatsByFlightId = async () => {
       windowSeat: isWindowSeat.value,
       seatsTogether: seatsTogether.value,
     };
-    console.log(filterParams)
 
     const seatResponse = await axios.get(`/api/seats/select/${flightId}`, { params: filterParams });
-    seats.value = seatResponse.data;
-    console.log('Filtered Seats:', seats.value);
+    selectedSeats.value = seatResponse.data;
   } catch (error) {
     errorMessage.value = error.response?.data?.message || 'Error fetching seat data';
   }
@@ -83,10 +81,13 @@ const isSeatReserved = (seatId) => {
   return seat?.isReserved || false;
 };
 
+const isSeatSelected = (seatId) => {
+  return selectedSeats.value.some(s => s.seatNumber === seatId);
+};
+
 onMounted(() => {
   fetchFlightData();
 });
-
 </script>
 
 <template>
@@ -152,7 +153,13 @@ onMounted(() => {
           <div v-for="seat in seatLetters" :key="row + seat"
                :class="[
                   'seat',
-                  seat === 'gap' ? 'gap' : isSeatReserved(row + seat) ? 'reserved' : 'seat-box'
+                  seat === 'gap'
+                    ? 'gap'
+                    : isSeatReserved(row + seat)
+                      ? 'reserved'
+                      : isSeatSelected(row + seat)
+                        ? 'selected'
+                        : 'seat-box'
                 ]">
             <span v-if="seat !== 'gap'">{{ row }}{{ seat }}</span>
           </div>
@@ -162,7 +169,6 @@ onMounted(() => {
 
   </div>
 </template>
-
 
 <style>
 
@@ -281,6 +287,18 @@ onMounted(() => {
   border-radius: 4px;
 }
 
+.selected {
+  width: 40px;
+  height: 40px;
+  background-color: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
 .gap {
   width: 40px;
   height: 40px;
@@ -289,10 +307,6 @@ onMounted(() => {
 
 .error-message {
   color: red;
-}
-
-.together {
-  display: flex;
 }
 
 </style>
